@@ -3,88 +3,120 @@ const fetch = require('node-fetch');
 const boardMembers = {
     chairman: {
         role: 'Chairman',
-        provider: 'anthropic',
-        model: 'claude-sonnet-4',
-        apiKey: process.env.ANTHROPIC_API_KEY,
-        systemPrompt: 'You are the Chairman providing strategic oversight and governance perspective.'
+        provider: 'google',
+        model: 'gemini-1.5-pro-latest',
+        apiKey: process.env.GOOGLE_API_KEY,
+        systemPrompt: 'You are the Chairman providing strategic oversight and governance perspective.',
+        cost: 'Low', // $1.25/$5 per million tokens
+        priority: 'high'
     },
     ceo: {
         role: 'CEO',
-        provider: 'openai',
-        model: 'gpt-4',
-        apiKey: process.env.OPENAI_API_KEY,
-        systemPrompt: 'You are the CEO providing executive leadership and vision.'
+        provider: 'anthropic',
+        model: 'claude-3-5-haiku-20241022',
+        apiKey: process.env.ANTHROPIC_API_KEY,
+        systemPrompt: 'You are the CEO providing executive leadership and vision.',
+        cost: 'Low', // $1/$5 per million tokens
+        priority: 'high'
     },
     cfo: {
         role: 'CFO',
-        provider: 'google',
-        model: 'gemini-pro',
-        apiKey: process.env.GOOGLE_API_KEY,
-        systemPrompt: 'You are the CFO providing financial analysis and cost optimization.'
+        provider: 'deepseek',
+        model: 'deepseek-chat',
+        apiKey: process.env.DEEPSEEK_API_KEY,
+        systemPrompt: 'You are the CFO providing financial analysis and cost optimization. Focus on numbers, ROI, and financial metrics.',
+        cost: 'Ultra-Low', // $0.14/$0.28 per million tokens
+        priority: 'high'
     },
     cmo: {
         role: 'CMO',
-        provider: 'anthropic',
-        model: 'claude-haiku',
-        apiKey: process.env.ANTHROPIC_API_KEY,
-        systemPrompt: 'You are the CMO providing marketing and brand strategy.'
+        provider: 'groq',
+        model: 'llama-3.1-70b-versatile',
+        apiKey: process.env.GROQ_API_KEY,
+        systemPrompt: 'You are the CMO providing marketing and brand strategy.',
+        cost: 'FREE',
+        priority: 'medium'
     },
     coo: {
         role: 'COO',
         provider: 'groq',
         model: 'llama-3.1-70b-versatile',
         apiKey: process.env.GROQ_API_KEY,
-        systemPrompt: 'You are the COO providing operational efficiency insights.'
+        systemPrompt: 'You are the COO providing operational efficiency insights.',
+        cost: 'FREE',
+        priority: 'high'
     },
     cto: {
         role: 'CTO',
-        provider: 'openai',
-        model: 'gpt-4-turbo',
-        apiKey: process.env.OPENAI_API_KEY,
-        systemPrompt: 'You are the CTO providing technical architecture and innovation.'
+        provider: 'google',
+        model: 'gemini-1.5-pro-latest',
+        apiKey: process.env.GOOGLE_API_KEY,
+        systemPrompt: 'You are the CTO providing technical architecture and innovation.',
+        cost: 'Low', // $1.25/$5 per million tokens
+        priority: 'high'
     },
     legal: {
         role: 'Legal Counsel',
         provider: 'anthropic',
-        model: 'claude-opus',
+        model: 'claude-sonnet-4-20250514',
         apiKey: process.env.ANTHROPIC_API_KEY,
-        systemPrompt: 'You are Legal Counsel providing compliance and risk assessment.'
+        systemPrompt: 'You are Legal Counsel providing compliance, risk assessment, and regulatory guidance. Be thorough and precise.',
+        cost: 'Medium', // $3/$15 per million - worth it for legal
+        priority: 'critical'
     },
     hr: {
         role: 'HR Director',
         provider: 'google',
-        model: 'gemini-flash',
+        model: 'gemini-1.5-flash-latest',
         apiKey: process.env.GOOGLE_API_KEY,
-        systemPrompt: 'You are the HR Director providing people and culture insights.'
+        systemPrompt: 'You are the HR Director providing people and culture insights.',
+        cost: 'Ultra-Low', // $0.075/$0.30 per million tokens
+        priority: 'medium'
     },
     treasurer: {
         role: 'Treasurer',
-        provider: 'mistral',
-        model: 'mistral-large',
-        apiKey: process.env.MISTRAL_API_KEY,
-        systemPrompt: 'You are the Treasurer providing cash flow and investment analysis.'
-    },
-    ned1: {
-        role: 'NED - Tech',
         provider: 'deepseek',
         model: 'deepseek-chat',
         apiKey: process.env.DEEPSEEK_API_KEY,
-        systemPrompt: 'You are a Non-Executive Director providing independent technology perspective.'
+        systemPrompt: 'You are the Treasurer providing cash flow and investment analysis. Focus on financial forecasting and capital management.',
+        cost: 'Ultra-Low', // $0.14/$0.28 per million tokens
+        priority: 'high'
+    },
+    ned1: {
+        role: 'NED - Tech',
+        provider: 'groq',
+        model: 'llama-3.3-70b-versatile',
+        apiKey: process.env.GROQ_API_KEY,
+        systemPrompt: 'You are a Non-Executive Director providing independent technology and innovation perspective.',
+        cost: 'FREE',
+        priority: 'medium'
     },
     ned2: {
         role: 'NED - Finance',
         provider: 'groq',
-        model: 'mixtral-8x7b',
+        model: 'mixtral-8x7b-32768',
         apiKey: process.env.GROQ_API_KEY,
-        systemPrompt: 'You are a Non-Executive Director providing independent financial perspective.'
+        systemPrompt: 'You are a Non-Executive Director providing independent financial perspective.',
+        cost: 'FREE',
+        priority: 'medium'
     },
     ned3: {
         role: 'NED - Strategy',
-        provider: 'cohere',
-        model: 'command-r-plus',
-        apiKey: process.env.COHERE_API_KEY,
-        systemPrompt: 'You are a Non-Executive Director providing independent strategic perspective.'
+        provider: 'google',
+        model: 'gemini-1.5-flash-latest',
+        apiKey: process.env.GOOGLE_API_KEY,
+        systemPrompt: 'You are a Non-Executive Director providing independent strategic perspective.',
+        cost: 'Ultra-Low', // $0.075/$0.30 per million tokens
+        priority: 'medium'
     }
+};
+
+// Cost optimization summary
+const COST_BREAKDOWN = {
+    free: ['cmo', 'coo', 'ned1', 'ned2'], // 4 members - Groq
+    ultraLow: ['cfo', 'treasurer', 'hr', 'ned3'], // 4 members - DeepSeek/Gemini Flash
+    low: ['chairman', 'ceo', 'cto'], // 3 members - Gemini Pro/Claude Haiku
+    medium: ['legal'] // 1 member - Claude Sonnet (justified for legal)
 };
 
 exports.handler = async (event) => {
@@ -103,15 +135,24 @@ exports.handler = async (event) => {
             targetedMembers = targetMembers || [];
         }
 
+        console.log(`Processing ${targetType} request with ${targetedMembers.length} members`);
+
         // Call AI providers in parallel
+        const startTime = Date.now();
         const responses = await Promise.all(
             targetedMembers.map(memberId => callAIProvider(memberId, proposal, threadId))
         );
+        const executionTime = Date.now() - startTime;
 
         const totalCost = responses.reduce((sum, r) => sum + (r.cost || 0), 0);
+        const freeCount = responses.filter(r => r.cost === 0).length;
 
         return {
             statusCode: 200,
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
             body: JSON.stringify({
                 success: true,
                 threadId,
@@ -122,14 +163,21 @@ exports.handler = async (event) => {
                     ...r
                 })),
                 totalCost,
-                executionMode: 'parallel'
+                freeResponses: freeCount,
+                executionTime: `${(executionTime / 1000).toFixed(2)}s`,
+                executionMode: 'parallel',
+                costEfficiency: `${freeCount}/${responses.length} free responses`
             })
         };
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Handler Error:', error);
         return {
             statusCode: 500,
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
             body: JSON.stringify({ success: false, error: error.message })
         };
     }
@@ -137,39 +185,55 @@ exports.handler = async (event) => {
 
 async function callAIProvider(memberId, message, threadId) {
     const member = boardMembers[memberId];
-    if (!member || !member.apiKey) {
+    if (!member) {
         return {
-            title: member?.role || memberId,
-            response: 'API key not configured',
+            title: memberId,
+            response: 'Board member not found',
             cost: 0,
-            provider: 'N/A'
+            provider: 'N/A',
+            icon: '❌'
+        };
+    }
+
+    if (!member.apiKey) {
+        return {
+            title: member.role,
+            response: `⚠️ API key not configured for ${member.provider}. Add ${member.provider.toUpperCase()}_API_KEY to environment variables.`,
+            cost: 0,
+            provider: member.provider,
+            icon: getIcon(member.role)
         };
     }
 
     try {
+        console.log(`Calling ${member.provider} (${member.cost} cost) for ${member.role}`);
+        
         switch (member.provider) {
             case 'anthropic':
                 return await callAnthropic(member, message);
-            case 'openai':
-                return await callOpenAI(member, message);
             case 'google':
                 return await callGoogle(member, message);
             case 'groq':
                 return await callGroq(member, message);
+            case 'deepseek':
+                return await callDeepSeek(member, message);
             default:
                 return {
                     title: member.role,
-                    response: `Provider ${member.provider} not yet implemented`,
+                    response: `Provider ${member.provider} not implemented`,
                     cost: 0,
-                    provider: member.provider
+                    provider: member.provider,
+                    icon: getIcon(member.role)
                 };
         }
     } catch (error) {
+        console.error(`Error calling ${member.provider} for ${member.role}:`, error);
         return {
             title: member.role,
-            response: `Error: ${error.message}`,
+            response: `Error from ${member.provider}: ${error.message}`,
             cost: 0,
-            provider: member.provider
+            provider: member.provider,
+            icon: getIcon(member.role)
         };
     }
 }
@@ -184,11 +248,16 @@ async function callAnthropic(member, message) {
         },
         body: JSON.stringify({
             model: member.model,
-            max_tokens: 1024,
+            max_tokens: 2048,
             system: member.systemPrompt,
             messages: [{ role: 'user', content: message }]
         })
     });
+
+    if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Anthropic API error: ${error}`);
+    }
 
     const data = await response.json();
     return {
@@ -196,54 +265,46 @@ async function callAnthropic(member, message) {
         response: data.content[0].text,
         cost: estimateCost('anthropic', member.model, message, data.content[0].text),
         provider: 'Claude',
-        icon: getIcon(member.role)
-    };
-}
-
-async function callOpenAI(member, message) {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${member.apiKey}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            model: member.model,
-            messages: [
-                { role: 'system', content: member.systemPrompt },
-                { role: 'user', content: message }
-            ]
-        })
-    });
-
-    const data = await response.json();
-    return {
-        title: member.role,
-        response: data.choices[0].message.content,
-        cost: estimateCost('openai', member.model, message, data.choices[0].message.content),
-        provider: 'OpenAI',
-        icon: getIcon(member.role)
+        icon: getIcon(member.role),
+        costTier: member.cost
     };
 }
 
 async function callGoogle(member, message) {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/${member.model}:generateContent?key=${member.apiKey}`, {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${member.model}:generateContent?key=${member.apiKey}`;
+    
+    const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             contents: [{
-                parts: [{ text: member.systemPrompt + '\n\n' + message }]
-            }]
+                parts: [{ text: `${member.systemPrompt}\n\nUser query: ${message}` }]
+            }],
+            generationConfig: {
+                maxOutputTokens: 2048,
+                temperature: 0.7
+            }
         })
     });
 
+    if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Google API error: ${error}`);
+    }
+
     const data = await response.json();
+    
+    if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+        throw new Error('Invalid response from Google API');
+    }
+
     return {
         title: member.role,
         response: data.candidates[0].content.parts[0].text,
         cost: estimateCost('google', member.model, message, data.candidates[0].content.parts[0].text),
         provider: 'Gemini',
-        icon: getIcon(member.role)
+        icon: getIcon(member.role),
+        costTier: member.cost
     };
 }
 
@@ -259,17 +320,59 @@ async function callGroq(member, message) {
             messages: [
                 { role: 'system', content: member.systemPrompt },
                 { role: 'user', content: message }
-            ]
+            ],
+            max_tokens: 2048,
+            temperature: 0.7
         })
     });
+
+    if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Groq API error: ${error}`);
+    }
 
     const data = await response.json();
     return {
         title: member.role,
         response: data.choices[0].message.content,
-        cost: 0, // Groq is free
+        cost: 0, // Groq is FREE
         provider: 'Groq',
-        icon: getIcon(member.role)
+        icon: getIcon(member.role),
+        costTier: 'FREE'
+    };
+}
+
+async function callDeepSeek(member, message) {
+    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${member.apiKey}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            model: member.model,
+            messages: [
+                { role: 'system', content: member.systemPrompt },
+                { role: 'user', content: message }
+            ],
+            max_tokens: 2048,
+            temperature: 0.7
+        })
+    });
+
+    if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`DeepSeek API error: ${error}`);
+    }
+
+    const data = await response.json();
+    return {
+        title: member.role,
+        response: data.choices[0].message.content,
+        cost: estimateCost('deepseek', member.model, message, data.choices[0].message.content),
+        provider: 'DeepSeek',
+        icon: getIcon(member.role),
+        costTier: member.cost
     };
 }
 
@@ -278,9 +381,22 @@ function estimateCost(provider, model, input, output) {
     const outputTokens = Math.ceil(output.length / 4);
     
     const rates = {
-        'anthropic': { 'claude-sonnet-4': { input: 0.003, output: 0.015 } },
-        'openai': { 'gpt-4': { input: 0.03, output: 0.06 } },
-        'google': { 'gemini-pro': { input: 0.00025, output: 0.0005 } }
+        'anthropic': {
+            'claude-sonnet-4-20250514': { input: 0.003, output: 0.015 },
+            'claude-3-5-haiku-20241022': { input: 0.001, output: 0.005 }
+        },
+        'google': {
+            'gemini-1.5-pro-latest': { input: 0.00125, output: 0.005 },
+            'gemini-1.5-flash-latest': { input: 0.000075, output: 0.0003 }
+        },
+        'deepseek': {
+            'deepseek-chat': { input: 0.00014, output: 0.00028 }
+        },
+        'groq': {
+            'llama-3.1-70b-versatile': { input: 0, output: 0 },
+            'llama-3.3-70b-versatile': { input: 0, output: 0 },
+            'mixtral-8x7b-32768': { input: 0, output: 0 }
+        }
     };
     
     const rate = rates[provider]?.[model] || { input: 0.001, output: 0.002 };
