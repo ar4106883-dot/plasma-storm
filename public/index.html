@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌧️ Raincloud Advanced - Enterprise AI Board</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { font-size: 3em; margin-bottom: 10px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { font-size: 1.2em; color: #666; margin-bottom: 30px; }
+        .status { background: #f0f9ff; padding: 20px; border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #3b82f6; }
+        .board-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 30px 0; }
+        .board-member { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 12px; text-align: center; }
+        .board-member .icon { font-size: 2em; margin-bottom: 10px; }
+        .board-member .role { font-weight: bold; font-size: 0.9em; }
+        textarea { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 1em; min-height: 150px; }
+        button { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px 30px; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; width: 100%; margin-top: 15px; }
+        button:hover { opacity: 0.9; }
+        #results { margin-top: 30px; }
+        .response { background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #10b981; }
+        .response-header { font-weight: bold; margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .cost-badge { background: #10b981; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌧️ Raincloud Advanced</h1>
+        <p class="subtitle">Enterprise AI Board with Intelligent Cost Optimization</p>
+        
+        <div class="status">
+            <strong>🎯 System Status:</strong> <span id="status">Initializing...</span><br>
+            <strong>💰 Estimated Cost:</strong> <span id="costEstimate">Calculating...</span>
+        </div>
+
+        <h2>Board Members (11+ roles)</h2>
+        <div class="board-grid">
+            <div class="board-member"><div class="icon">👔</div><div class="role">Chairman</div></div>
+            <div class="board-member"><div class="icon">🎯</div><div class="role">CEO</div></div>
+            <div class="board-member"><div class="icon">💰</div><div class="role">CFO</div></div>
+            <div class="board-member"><div class="icon">📢</div><div class="role">CMO</div></div>
+            <div class="board-member"><div class="icon">⚙️</div><div class="role">COO</div></div>
+            <div class="board-member"><div class="icon">💻</div><div class="role">CTO</div></div>
+            <div class="board-member"><div class="icon">⚖️</div><div class="role">Legal</div></div>
+            <div class="board-member"><div class="icon">👥</div><div class="role">HR</div></div>
+            <div class="board-member"><div class="icon">📊</div><div class="role">Treasurer</div></div>
+            <div class="board-member"><div class="icon">🎓</div><div class="role">NED 1</div></div>
+            <div class="board-member"><div class="icon">📈</div><div class="role">NED 2</div></div>
+            <div class="board-member"><div class="icon">🔬</div><div class="role">NED 3</div></div>
+        </div>
+
+        <h2>Submit Proposal</h2>
+        <textarea id="proposal" placeholder="Enter your business proposal or question...
+
+Example: 'Should we expand into the European market? Budget: $500K, Timeline: 6 months'"></textarea>
+        <button onclick="submitProposal()">🚀 Submit to Board (Multithreaded)</button>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        let providers = [];
+        
+        // Load system status
+        async function loadStatus() {
+            try {
+                const response = await fetch('/.netlify/functions/cost-analysis');
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('status').textContent = 
+                        `${data.summary.totalProviders} providers active (${data.summary.freeProviders} FREE)`;
+                    document.getElementById('costEstimate').textContent = 
+                        data.costComparison[0].costPerQuery + ' per query (using cheapest)';
+                    providers = data.costComparison;
+                }
+            } catch (error) {
+                console.error('Error loading status:', error);
+                document.getElementById('status').textContent = 'Ready (check console for details)';
+            }
+        }
+
+        // Submit proposal
+        async function submitProposal() {
+            const proposal = document.getElementById('proposal').value;
+            if (!proposal.trim()) {
+                alert('Please enter a proposal');
+                return;
+            }
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p style="text-align:center; padding:40px;">⏳ Consulting the board (parallel execution)...</p>';
+
+            try {
+                const response = await fetch('/.netlify/functions/submit-proposal', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ proposal, includeChairman: true })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    resultsDiv.innerHTML = `
+                        <h2>Board Discussion (${data.executionMode} execution)</h2>
+                        <p><strong>Total Cost:</strong> $${data.totalCost.toFixed(6)} | <strong>Board Size:</strong> ${data.boardSize} members</p>
+                    `;
+
+                    data.responses.forEach(r => {
+                        resultsDiv.innerHTML += `
+                            <div class="response">
+                                <div class="response-header">
+                                    <span>${r.icon} ${r.title}</span>
+                                    <span class="cost-badge">${r.provider} - $${r.cost.toFixed(6)}</span>
+                                </div>
+                                <div>${r.response.replace(/\n/g, '<br>')}</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    resultsDiv.innerHTML = `<div class="response" style="border-left-color:red;">Error: ${data.error || 'Unknown error'}</div>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="response" style="border-left-color:red;">Error: ${error.message}. Check that your API keys are configured in Netlify.</div>`;
+            }
+        }
+
+        // Load status on page load
+        loadStatus();
+    </script>
+</body>
+</html>
