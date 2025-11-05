@@ -1,16 +1,14 @@
 {
-  "name": "raincloud-advanced",
-  "version": "2.0.0",
-  "description": "Enterprise AI Board with 10 providers, intelligent routing, and dynamic agent management",
+  "name": "universal-ai-gateway",
+  "version": "1.0.0",
+  "description": "A universal gateway for multiple LLM providers on Netlify.",
   "main": "index.js",
   "scripts": {
-    "dev": "netlify dev",
-    "deploy": "netlify deploy --prod"
+    "dev": "netlify dev"
   },
-  "keywords": ["ai", "multi-agent", "board", "cost-optimization", "enterprise"],
-  "author": "Raincloud",
-  "license": "MIT",
   "dependencies": {
-    "node-fetch": "^2.6.7"
+    "@google/generative-ai": "^0.2.0",
+    "netlify-cli": "^17.0.0",
+    "openai": "^4.28.0"
   }
 }
