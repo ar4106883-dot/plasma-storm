@@ -1,0 +1,37 @@
+html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal AI Gateway Test</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f0f0; color: #333; max-width: 800px; margin: 2em auto; }
+        #response { background: #fff; padding: 1em; border-radius: 5px; margin-top: 1em; white-space: pre-wrap; }
+        #controls { display: flex; gap: 1em; }
+        textarea { flex-grow: 1; }
+    </style>
+</head>
+<body>
+    <h1>Universal AI Gateway Test</h1>
+    <p>Choose a provider and send a prompt to the central <code>/api/gateway</code> endpoint.</p>
+
+    <div id="controls">
+        <textarea id="prompt" rows="4">Write a short poem about space.</textarea>
+        <div>
+            <label for="provider">Provider:</label>
+            <select id="provider">
+                <option value="gemini" selected>Gemini</option>
+                <option value="openai">OpenAI</option>
+                <option value="anthropic">Anthropic (Placeholder)</option>
+            </select>
+            <button id="submitBtn">Send</button>
+        </div>
+    </div>
+
+    <h2>Response:</h2>
+    <pre id="response">...</pre>
+
+    <script src="script.js"></script>
+</body>
+</html>
