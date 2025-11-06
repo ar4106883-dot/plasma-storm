@@ -1,4 +1,4 @@
-
+javascript
 const submitBtn = document.getElementById('submitBtn');
 const promptInput = document.getElementById('prompt');
 const providerSelect = document.getElementById('provider');
@@ -14,22 +14,24 @@ submitBtn.addEventListener('click', async () => {
     submitBtn.disabled = true;
 
     try {
+        // This is the WEB ADDRESS for your function, created by Netlify.
         const response = await fetch('/api/gateway', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 prompt: prompt,
-                provider: provider // The gateway uses this to route the request
+                provider: provider
             })
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            // Get more detail from the server's error response
+            const errorData = await response.json().catch(() => ({ message: 'Server returned an invalid response.' }));
+            throw new Error(`HTTP error! Status: ${response.status} - ${errorData.message || response.statusText}`);
         }
 
         const data = await response.json();
         
-        // Display the response and which provider handled it
         responseDiv.textContent = `--- Response from ${data.provider} ---\n\n${data.content}`;
 
     } catch (error) {
