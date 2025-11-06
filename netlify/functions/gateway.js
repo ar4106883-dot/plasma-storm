@@ -1,4 +1,4 @@
-const geminiHandler = require('./gemini.js');
+const geminiHandler = require('./handlers/gemini.js');
 const openaiHandler = require('./openai.js');
 const anthropicHandler = require('./anthropic.js');
 
