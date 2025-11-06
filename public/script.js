@@ -14,7 +14,7 @@ submitBtn.addEventListener('click', async () => {
     submitBtn.disabled = true;
 
     try {
-        const response = await fetch('/functions/gateway.js', {
+        const response = await fetch('/api/gateway', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
