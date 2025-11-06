@@ -1,4 +1,3 @@
-javascript
 const geminiHandler = require('./gemini.js');
 const openaiHandler = require('./openai.js');
 const anthropicHandler = require('./anthropic.js');
