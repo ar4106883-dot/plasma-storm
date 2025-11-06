@@ -1,4 +1,4 @@
-javascript
+
 const submitBtn = document.getElementById('submitBtn');
 const promptInput = document.getElementById('prompt');
 const providerSelect = document.getElementById('provider');
