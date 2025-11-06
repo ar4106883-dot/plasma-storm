@@ -1,9 +1,8 @@
 const geminiHandler = require('./handlers/gemini.js');
-const openaiHandler = require('./openai.js');
-const anthropicHandler = require('./anthropic.js');
+const openaiHandler = require('./handlers/openai.js');
+const anthropicHandler = require('./handlers/anthropic.js');
 
 exports.handler = async (event, context) => {
-    // Check if the request method is POST
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
