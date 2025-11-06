@@ -1,8 +1,8 @@
 
 // Import the modular handlers for each provider
-const geminiHandler = require('../handlers/gemini');
-const openaiHandler = require('../handlers/openai');
-const anthropicHandler = require('../handlers/anthropic');
+const geminiHandler = require('./gemini');
+const openaiHandler = require('./openai');
+const anthropicHandler = require('./anthropic');
 
 // This is where you would place your complex "market forces" logic.
 // For now, it's a simple router based on a 'provider' field in the request.
