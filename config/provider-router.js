@@ -49,10 +49,10 @@ const PROVIDER_CONFIGS = {
     name: 'Google Gemini',
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
     models: {
-      'gemini-1.5-pro': { inputCost: 1.25, outputCost: 5.00, contextWindow: 1000000, strengths: ['huge-context', 'multimodal', 'reasoning'] },
-      'gemini-1.5-flash': { inputCost: 0.075, outputCost: 0.30, contextWindow: 1000000, strengths: ['cheap', 'fast', 'large-context'] }
+      'gemini-2.0-flash': { inputCost: 0.00, outputCost: 0.00, contextWindow: 1000000, strengths: ['free', 'fast', 'large-context', 'multimodal'] },
+      'gemini-2.0-flash-exp': { inputCost: 0.00, outputCost: 0.00, contextWindow: 1000000, strengths: ['free', 'experimental', 'multimodal'] }
     },
-    defaultModel: 'gemini-1.5-flash'
+    defaultModel: 'gemini-2.0-flash'
   },
   
   together: {

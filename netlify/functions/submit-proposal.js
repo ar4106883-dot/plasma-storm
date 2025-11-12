@@ -4,10 +4,10 @@ const boardMembers = {
     chairman: {
         role: 'Chairman',
         provider: 'google',
-        model: 'gemini-1.5-pro-latest',
+        model: 'gemini-2.0-flash',
         apiKey: process.env.GOOGLE_API_KEY,
         systemPrompt: 'You are the Chairman providing strategic oversight and governance perspective.',
-        cost: 'Low', // $1.25/$5 per million tokens
+        cost: 'Low',
         priority: 'high'
     },
     ceo: {
@@ -49,10 +49,10 @@ const boardMembers = {
     cto: {
         role: 'CTO',
         provider: 'google',
-        model: 'gemini-1.5-pro-latest',
+        model: 'gemini-2.0-flash',
         apiKey: process.env.GOOGLE_API_KEY,
         systemPrompt: 'You are the CTO providing technical architecture and innovation.',
-        cost: 'Low', // $1.25/$5 per million tokens
+        cost: 'Low',
         priority: 'high'
     },
     legal: {
@@ -67,10 +67,10 @@ const boardMembers = {
     hr: {
         role: 'HR Director',
         provider: 'google',
-        model: 'gemini-1.5-flash-latest',
+        model: 'gemini-2.0-flash',
         apiKey: process.env.GOOGLE_API_KEY,
         systemPrompt: 'You are the HR Director providing people and culture insights.',
-        cost: 'Ultra-Low', // $0.075/$0.30 per million tokens
+        cost: 'Ultra-Low',
         priority: 'medium'
     },
     treasurer: {
@@ -103,10 +103,10 @@ const boardMembers = {
     ned3: {
         role: 'NED - Strategy',
         provider: 'google',
-        model: 'gemini-1.5-flash-latest',
+        model: 'gemini-2.0-flash',
         apiKey: process.env.GOOGLE_API_KEY,
         systemPrompt: 'You are a Non-Executive Director providing independent strategic perspective.',
-        cost: 'Ultra-Low', // $0.075/$0.30 per million tokens
+        cost: 'Ultra-Low',
         priority: 'medium'
     }
 };
@@ -386,8 +386,8 @@ function estimateCost(provider, model, input, output) {
             'claude-3-5-haiku-20241022': { input: 0.001, output: 0.005 }
         },
         'google': {
-            'gemini-1.5-pro-latest': { input: 0.00125, output: 0.005 },
-            'gemini-1.5-flash-latest': { input: 0.000075, output: 0.0003 }
+            'gemini-2.0-flash': { input: 0.0, output: 0.0 },
+            'gemini-2.0-flash-exp': { input: 0.0, output: 0.0 }
         },
         'deepseek': {
             'deepseek-chat': { input: 0.00014, output: 0.00028 }
